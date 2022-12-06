@@ -1,0 +1,982 @@
+zabbix_export:
+  version: '6.0'
+  date: '2022-12-06T09:21:34Z'
+  groups:
+    -
+      uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    -
+      uuid: 81b12debee15463a84fcf5cb1814dee8
+      template: 'Schneider Galaxy UPS'
+      name: 'Schneider Galaxy VS / PX / VL  UPS'
+      description: |
+        Template to monitor Galaxy VS / PX / VL three-phase UPS devices via SNMP
+        Tested on Galaxy VS. Should also work on PX and VL.
+        
+        If this template is useful for you, please let me know:
+        marcel.brouwers[@]maastrichtuniversity.nl
+      groups:
+        -
+          name: Templates
+      items:
+        -
+          uuid: 392e7ffdc98a4f8b965c9544710d25be
+          name: upsAdvBatteryActualVoltage
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.2.8.0
+          key: upsAdvBatteryActualVoltage
+          delay: 2m
+          units: volts
+          description: 'The actual battery bus voltage in Volts.'
+        -
+          uuid: 82dc7126c8ec4580a095e7f781a99c2a
+          name: upsAdvBatteryBreakerStatus
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.2.27.0
+          key: upsAdvBatteryBreakerStatus
+          delay: 5m
+          description: |
+            The value indicates the aggregated status of the
+            battery breakers in the system.
+            • disconnected(1): None of the battery
+            breakers are closed, and the battery system is
+            disconnected.
+            • closed(2): At least one of the battery breakers
+            in the system is closed
+            • notPresent(3): Not present
+          triggers:
+            -
+              uuid: f6a9b092587541d8a66da406792fa959
+              expression: 'last(/Schneider Galaxy UPS/upsAdvBatteryBreakerStatus)=1'
+              name: 'Battery breakers are not closed'
+              priority: AVERAGE
+        -
+          uuid: 88c7af03bb6145d89b7a3cc1e98d9df2
+          name: upsAdvBatteryCapacity
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.2.1.0
+          key: upsAdvBatteryCapacity
+          delay: 2m
+          value_type: FLOAT
+          units: '%'
+          description: |
+            The remaining battery capacity expressed in
+            percent of full capacity.
+        -
+          uuid: a69e4576151c4308a7cf83f44e9ce592
+          name: upsAdvBatteryChargerStatus
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.2.17.0
+          key: upsAdvBatteryChargerStatus
+          description: |
+            The status of the battery charger. If the UPS is
+            unable to find the state of charger, this variable is
+            set to unknown(1).
+            • unknown (1)
+            • ok (2)
+            • inFaultCondition (3)
+            • floatCharging (4)
+            • boostCharging (5)
+            • resting (6)
+            • notCharging (7)
+            • equalizationCharging (8)
+            • testInProgress (9)
+            • cyclicFloatCharging (10)
+          triggers:
+            -
+              uuid: 01090d9b8a61495fb87f46265df77788
+              expression: 'last(/Schneider Galaxy UPS/upsAdvBatteryChargerStatus)=3'
+              name: 'Battery charger in fault condition'
+              priority: HIGH
+        -
+          uuid: d6cdad03498646f79c8ac3c5cb19d32c
+          name: upsAdvBatteryCurrent
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.2.9.0
+          key: upsAdvBatteryCurrent
+          units: amps
+          description: 'The battery current in Amps'
+        -
+          uuid: a69a9bf8fc754c3aa16d8cd919c09410
+          name: upsAdvBatteryEstimatedChargeTime
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.2.15.0
+          key: upsAdvBatteryEstimatedChargeTime
+          delay: 5m
+          description: 'The estimated remaining time required to charge the UPS to a full state of charge.'
+        -
+          uuid: 86bb33cb7b554f5c809ebe2b13835901
+          name: upsAdvBatteryFuseStatus
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.2.26.0
+          key: upsAdvBatteryFuseStatus
+          delay: 5m
+          description: |
+            If battery system has one common fuse for the
+            battery system, the status is given by this value:
+            •fuseOpen (1)
+            •fuseOk (2)
+            •notPresent (3)
+        -
+          uuid: 83637621649d475cbdc3dc30dc1478a4
+          name: upsAdvBatteryNominalVoltage
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.2.7.0
+          key: upsAdvBatteryNominalVoltage
+          delay: 5m
+          units: Volts
+          description: 'The nominal battery voltage in Volts'
+        -
+          uuid: 2c7af8ef7f7340a98796a2f3e03ed45d
+          name: upsAdvBatteryPower
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.2.16.0
+          key: upsAdvBatteryPower
+          units: kW
+          description: 'The measured battery power in kW'
+        -
+          uuid: 274c060508224e6c8c916c9c11ffe65f
+          name: upsAdvBatteryRunTimeRemaining
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.2.3.0
+          key: upsAdvBatteryRunTimeRemaining
+          delay: 2m
+          units: s
+          description: |
+            The UPS battery run time remaining before
+            battery exhaustion
+          preprocessing:
+            -
+              type: MULTIPLIER
+              parameters:
+                - '0.01'
+        -
+          uuid: 9ce91809529a4c6a854652c4603e4af2
+          name: upsAdvBatteryTemperature
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.2.2.0
+          key: upsAdvBatteryTemperature
+          delay: 2m
+          description: 'The current internal UPS temperature expressed in Celsius. Temperatures below zero read as 0.'
+        -
+          uuid: 934dd81d36f14bf6bb2ef1be02558711
+          name: upsAdvBatteryTotalCapacity
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.2.25.0
+          key: upsAdvBatteryTotalCapacity
+          units: Ah
+          description: |
+            The actual available battery capacity of the
+            system expressed in ampere hours (Ah). The
+            value is updated continuously, for example when
+            battery breakers are opened or closed, or when
+            battery strings/battery blocks are added or
+            removed.
+        -
+          uuid: 17b67281156142108ac487d4f4ed8c0f
+          name: upsAdvBatteryWiringConfiguration
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.2.28.0
+          key: upsAdvBatteryWiringConfiguration
+          delay: 24h
+          description: |
+            The value indicates the wiring configuration,
+            whether the battery is 2-wire or 3-wire. If it's a 3-
+            wire battery system, the system can have 2
+            voltages and currents per cabinet.
+            • twoWire (1): 2-wire (a non-split battery)
+            • threeWire (2): 3-wire (a split battery)
+        -
+          uuid: 004a77c7373f4e5ab9e7b50413066a79
+          name: upsAdvConfigRatedOutputVoltage
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.5.2.1.0
+          key: upsAdvConfigRatedOutputVoltage
+          delay: 24h
+          units: VAC
+          description: 'The nominal output voltage from the UPS in VAC'
+        -
+          uuid: 2ba109c77ba444bf8d359faa695502c0
+          name: upsAdvEnergyStorageType
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.1.2.8.0
+          key: upsAdvEnergyStorageType
+          delay: 24h
+          description: |
+            The energy storage type connected to the UPS. It
+            states battery type and battery chemistry:
+            • unknown (1): Unknown
+            • vrlaOrWetCells (2): VRLA or wet cells
+            • niCdBatteries (3): NiCd batteries
+            • liIonBatteries (4): Lithium-ion batteries
+            • noEnergyStorage (5): No energy storage
+            • flywheel (6): Flywheel
+            • ultracaps (7): Ultracaps
+        -
+          uuid: d2ef3aa6a651430bab14168378287c35
+          name: upsAdvIdentDateOfManufacture
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.1.2.2.0
+          key: upsAdvIdentDateOfManufacture
+          delay: 24h
+          trends: '0'
+          value_type: CHAR
+        -
+          uuid: a035947abe8c4dc58751f38588c014fb
+          name: upsAdvIdentFirmwareRevision
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.1.2.1.0
+          key: upsAdvIdentFirmwareRevision
+          delay: 8h
+          trends: '0'
+          value_type: CHAR
+        -
+          uuid: 3e83c1f11e90436bb513b72b99dd7103
+          name: upsAdvIdentHardwareRevision
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.1.2.6.0
+          key: upsAdvIdentHardwareRevision
+          delay: 24h
+          trends: '0'
+          value_type: CHAR
+        -
+          uuid: e401caa9afee4260b40b53ab75cf6670
+          name: upsAdvIdentSerialNumber
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.1.2.3.0
+          key: upsAdvIdentSerialNumber
+          delay: 24h
+          trends: '0'
+          value_type: CHAR
+        -
+          uuid: fc7f9afad8d1439180b5b64d86118afe
+          name: upsAdvIdentSkuNumber
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.1.2.5.0
+          key: upsAdvIdentSkuNumber
+          delay: 24h
+          trends: '0'
+          value_type: CHAR
+        -
+          uuid: 72d43f9a89df45368817ebb7a6662e4b
+          name: upsAdvIdentUpsPhaseConfigType
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.1.2.7.0
+          key: upsAdvIdentUpsPhaseConfigType
+          delay: 24h
+          description: |
+            The type definition, based on phase configuration:
+            • unknown (1): Unknown
+            • threePhaseInOut (2): 3 phase in/out
+            • onePhaseInOut (3): 1 phase in/out
+            • threePhaseInOneOut (4): 3 phase in/1
+            phase out
+        -
+          uuid: 587d0f0015b24c78bf3acab1b23a91b2
+          name: upsAdvInputBypassTotalActivePower
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.3.2.14.0
+          key: upsAdvInputBypassTotalActivePower
+          delay: 2m
+          units: kW
+          description: 'The input bypass total active power (sum of all three phases) of the UPS system in kW'
+        -
+          uuid: 835c5e58d9b04200b011f6a4ef608d44
+          name: upsAdvInputBypassTotalApparentPower
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.3.2.13.0
+          key: upsAdvInputBypassTotalApparentPower
+          delay: 2m
+          units: kVA
+          description: 'The input bypass total apparent power (sum of all three phases) of the UPS system in kVA'
+        -
+          uuid: b4e523b87b6045d6ab5a02608741b185
+          name: upsAdvInputFrequency
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.3.2.4.0
+          key: upsAdvInputFrequency
+          units: Hz
+          description: |
+            The current input frequency to the UPS system in
+            Hz.
+        -
+          uuid: c7153155c4a1452482d33e3af6bd5f88
+          name: upsAdvInputTotalActivePower
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.3.2.12.0
+          key: upsAdvInputTotalActivePower
+          delay: 2m
+          units: kW
+          description: 'The input total active power (sum of all three phases) of the UPS system in kW.'
+        -
+          uuid: ae8a25d7a86f44efa80489f2833353f1
+          name: upsAdvInputTotalApparentPower
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.3.2.11.0
+          key: upsAdvInputTotalApparentPower
+          delay: 2m
+          units: kVA
+          description: 'The input total apparent power (sum of all three phases) of the UPS system in kVA'
+        -
+          uuid: 90519b4d2af64f0bbc7af6b91c50d8cf
+          name: upsAdvOutputActivePower
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.4.2.8.0
+          key: upsAdvOutputActivePower
+          delay: 5m
+          units: W
+          description: |
+            The total output active power of the UPS system
+            in W. The total active power is the sum of phase
+            1, phase 2 and phase 3 power
+        -
+          uuid: 64fe4722b8af456286fa343d96f360f9
+          name: upsAdvOutputApparentPower
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.4.2.9.0
+          key: upsAdvOutputApparentPower
+          delay: 5m
+          units: W
+          description: |
+            The total output active power of the UPS system
+            in W. The total active power is the sum of phase
+            1, phase 2 and phase 3 power.
+        -
+          uuid: 0afcc338fd364d35a40c7ff3977f0a13
+          name: upsAdvOutputFrequency
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.4.2.2.0
+          key: upsAdvOutputFrequency
+          value_type: FLOAT
+          units: Hz
+          description: |
+            The current output frequency of the UPS system
+            in Hz
+        -
+          uuid: 30b23ead6335456f9e786143a401ed34
+          name: upsAdvOutputKVACapacity
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.4.2.6.0
+          key: upsAdvOutputKVACapacity
+          delay: 24h
+          units: kVA
+          description: |
+            The maximum load that this UPS can support.
+            This value is dynamic for scalable 3-phase UPS
+            devices where power modules can be added for
+            increased capacity. The value indicates the actual
+            available output capacity. For non-scalable 3-
+            phase UPS devices the value is fixed to the UPS
+            rating
+        -
+          uuid: e683f7d74864493f884056cc8cbb6ba7
+          name: upsAdvOutputLoad
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.4.2.3.0
+          key: upsAdvOutputLoad
+          value_type: FLOAT
+          units: '%'
+          description: 'The current UPS load expressed in percent of rated capacity'
+        -
+          uuid: 7fe198b176184800b1590e5ef7cd27ae
+          name: upsAdvStateAbnormalConditions
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.11.2.1.0
+          key: upsAdvStateAbnormalConditions
+          delay: 30m
+          trends: '0'
+          value_type: CHAR
+          description: |
+            An ASCII string containing the 32 flags
+            representing the current active UPS faults. If the
+            Network Card is unable to determine the values of
+            the flags, this variable is set to 'UNKNOWN'.
+            The flags are numbered from 1 to 32, and read
+            from left to right. The flags are defined as follows:
+            • Flag 1: Power Module Failure
+            • Flag 2: Main Intelligence Module Failure
+            • Flag 3: Redundant Intelligence Module Failure
+            • Flag 4: Battery Failure
+            • Flag 5: Load(kVA) Alarm Threshold Violation
+            • Flag 6: Redundancy Lost
+            • Flag 7: Redundancy Below Alarm Threshold
+            • Flag 8: Bypass not in Range; Either Frequency
+            or Voltage
+            • Flag 9: Bypass Contactor Stuck in Bypass
+            Condition
+            • Flag 10: Bypass Contactor Stuck in On-Line
+            Condition
+            • Flag 11: In Bypass due to an Internal Fault
+            • Flag 12: In Bypass due to an Overload
+            • Flag 13: In Maintenance Bypass
+            • Flag 14: Input Circuit Breaker Tripped Open
+            • Flag 15: System Level Fan Failure
+            • Flag 16: Redundant Intelligent Module in Control
+            • Flag 17: IIC Inter-Module Communication
+            Failure
+            • Flag 18: No Working Power Modules
+            • Flag 19: Load Shutdown From Bypass; Input
+            Frequency
+            • Flag 20: Runtime Below Alarm Threshold
+            • Flag 21: Extended Run Frame Fault
+            • Flag 22: Output Voltage out of Range
+            • Flag 23: UPS Not Synchronized
+            • Flag 24: No Batteries Installed
+            • Flag 25: Battery Voltage High
+            • Flag 26: UPS Specific Fault Detected
+            • Flag 27: Site Wiring Fault
+            • Flag 28: Backfeed Protection Relay Opened
+            • Flag 29: <Not Used>
+            • Flag 30: <Not Used>
+            • Flag 31: <Not Used>
+            • Flag 32: <Not Used>
+        -
+          uuid: 8b33b56d200a45f9b71df33e92022511
+          name: upsAdvStateLifeCycleManagement
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.11.2.14.0
+          key: upsAdvStateLifeCycleManagement
+          delay: 24h
+          trends: '0'
+          value_type: CHAR
+          description: |
+            An ASCII string containing the 16 flags
+            representing the life cycle management alerts for
+            the device. If the Network Card is unable to
+            determine the values of the flags, this variable is
+            set to 'UNKNOWN'.
+            The flags are numbered from 1 to 16, and read
+            from left to right. The bits are defined as follows:
+            • Flag 1: End of Warranty Soon
+            • Flag 2: Battery Check Recommended
+            • Flag 3: Service Period On Wearing Parts
+            Expired
+            • Flag 4: Secure Start-up Recommended
+            • Flag 5: Fan Life Expired
+            • Flag 6: DC Capacitor Life Expired
+            • Flag 7: AC Capacitor Life Expired
+            • Flag 8: Supply Service Life Expired
+            • Flag 9: UPS Out Of Limits Warning
+            • Flag 10: Air Filter Life Expired
+            • Flag 11: <Not Used>
+            • Flag 12: <Not Used>
+            • Flag 13: <Not Used>
+            • Flag 14: <Not Used>
+            • Flag 15: <Not Used>
+            • Flag 16: <Not Used>
+        -
+          uuid: 7deb0c7208fb4181b9f4238777acc1c1
+          name: upsBasicBatteryStatus
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.1.1.0
+          key: upsBasicBatteryStatus
+          delay: 5m
+          description: |
+            The status of the UPS batteries:
+            • unknown (1): The Management Card or
+            PowerNet Agent cannot report the status.
+            • batteryNormal (2): Within normal operating
+            parameters.
+            • batteryLow (3): Insufficient battery capacity
+            to support the UPS equipment load.
+            • batteryInFaultCondition (4): The
+            battery has an internal error condition.
+          triggers:
+            -
+              uuid: cc8c96bd7dec42e8a17b7b1a2bf5de21
+              expression: 'last(/Schneider Galaxy UPS/upsBasicBatteryStatus)=4'
+              name: 'UPS battery Fault condition'
+              priority: HIGH
+            -
+              uuid: 8091e42dfa4c40f99bcf89b63f5c56c2
+              expression: 'last(/Schneider Galaxy UPS/upsBasicBatteryStatus)=3'
+              name: 'UPS battery low'
+              priority: HIGH
+              description: 'Insufficient battery capacity to support the UPS equipment load.'
+            -
+              uuid: 2f23ff78e81e494da4a31b2891177528
+              expression: 'last(/Schneider Galaxy UPS/upsBasicBatteryStatus)=1'
+              name: 'UPS battery unknown'
+              priority: AVERAGE
+              description: 'The Management Card or PowerNet Agent cannot report the status.'
+        -
+          uuid: b8dc81ae91f44fa592e01a2bd2885a09
+          name: upsBasicBatteryTimeOnBattery
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.1.2.0
+          key: upsBasicBatteryTimeOnBattery
+          delay: 5m
+          units: s
+          description: |
+            The elapsed time since the UPS has switched to
+            battery power
+          preprocessing:
+            -
+              type: MULTIPLIER
+              parameters:
+                - '0.01'
+        -
+          uuid: cb03dcf091384597897b467570df9db1
+          name: upsBasicIdentFamilyName
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.1.1.3.0
+          key: upsBasicIdentFamilyName
+          delay: 24h
+          trends: '0'
+          value_type: CHAR
+        -
+          uuid: 300b62c6d1f6431b9d43d1f7dc3be069
+          name: upsBasicIdentModel
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.1.1.1.0
+          key: upsBasicIdentModel
+          delay: 24h
+          trends: '0'
+          value_type: CHAR
+        -
+          uuid: a97deb2023324e4eb37d39dd908293ba
+          name: upsBasicOutputStatus
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.4.1.1.0
+          key: upsBasicOutputStatus
+          description: |
+            The current state of the UPS. If the UPS is unable
+            to determine the state of the UPS, this variable is
+            set to unknown(1).
+            The supported values are:
+            •unknown (1): The Management Card cannot
+            determine the state of the UPS.
+            •onLine (2): The UPS is using acceptable
+            input voltage to provide output voltage.
+            •onBattery (3): The UPS is using battery
+            power to provide output voltage.
+            • softwareBypass (6): The UPS was placed
+            into bypass mode using SNMP, PowerChute
+            plus or PowerNet Manager.
+            • off (7): The UPS is turned off.
+            • switchedBypass (9): The UPS was placed
+            into bypass mode using the switch at the UPS.
+            • hardwareFailureBypass (10): The UPS
+            placed itself into bypass mode in response to a
+            hardware problem.
+            • ecoMode (13): The UPS is operating in Eco-
+            mode.
+            • onBatteryTest (15): The UPS is running a
+            self-test.
+            • emergencyStaticBypass (16): The UPS
+            was placed into static bypass mode.
+            • staticBypassStandby (17): The UPS is
+            waiting to be placed into static bypass mode.
+            • eConversion (20): The UPS is operating in
+            ECOnversion mode.
+            • chargerSpotmode (21): The UPS is running
+            a charger power test (SPoT).
+            • inverterSpotmode (22): The UPS is
+            running an inverter power test (SPoT).
+            • batteryDischargeSpotmode (24): The
+            UPS is running a battery discharge power test
+            (SPoT).
+            • inverterStandby (25): The UPS is
+            operating in standby mode.
+          triggers:
+            -
+              uuid: 825a9acbb2fe4440ba742402e0dc6324
+              expression: 'last(/Schneider Galaxy UPS/upsBasicOutputStatus)=25'
+              name: 'The UPS is operating in standby mode'
+              priority: INFO
+            -
+              uuid: 993359d306f1434fab8ca623f6798b8c
+              expression: 'last(/Schneider Galaxy UPS/upsBasicOutputStatus)=22'
+              name: 'The UPS is running a battery discharge power test (SPoT)'
+              priority: INFO
+            -
+              uuid: 9f8d9ddc1b6040629c6d2011328e9cb9
+              expression: 'last(/Schneider Galaxy UPS/upsBasicOutputStatus)=21'
+              name: 'The UPS is running a charger power test (SPoT)'
+              priority: INFO
+            -
+              uuid: 2248bd8135fe44fbae74574b34a6c45a
+              expression: 'last(/Schneider Galaxy UPS/upsBasicOutputStatus)=22'
+              name: 'The UPS is running an inverter power test (SPoT)'
+              priority: INFO
+            -
+              uuid: 2b31408df3b1453e9823884f66cecebb
+              expression: 'last(/Schneider Galaxy UPS/upsBasicOutputStatus)=15'
+              name: 'The UPS is running a self-test'
+              priority: INFO
+            -
+              uuid: 5dd07b0f54c54c97bf62b22c36789bdc
+              expression: 'last(/Schneider Galaxy UPS/upsBasicOutputStatus)=7'
+              name: 'The UPS is turned off'
+              priority: AVERAGE
+            -
+              uuid: f1d95f28a79c4252bf5f0558e75e64c4
+              expression: 'last(/Schneider Galaxy UPS/upsBasicOutputStatus)=3'
+              name: 'The UPS is using battery power to provide output voltage'
+              priority: INFO
+            -
+              uuid: 5485c7fb805a4005a843b5e587d2bb2d
+              expression: 'last(/Schneider Galaxy UPS/upsBasicOutputStatus)=17'
+              name: 'The UPS is waiting to be placed into static bypass mode'
+              priority: WARNING
+            -
+              uuid: 036eae32f34541368d069e1f2f59b746
+              expression: 'last(/Schneider Galaxy UPS/upsBasicOutputStatus)=10'
+              name: 'The UPS placed itself into bypass mode in response to a hardware problem'
+              priority: HIGH
+            -
+              uuid: 444d14c7c7404a0c8bbcd61781814799
+              expression: 'last(/Schneider Galaxy UPS/upsBasicOutputStatus)=6'
+              name: 'The UPS was placed into bypass mode using SNMP, PowerChute plus or PowerNet Manager'
+              priority: INFO
+            -
+              uuid: aa31a52a960448f1aacbb4aa72f11060
+              expression: 'last(/Schneider Galaxy UPS/upsBasicOutputStatus)=9'
+              name: 'The UPS was placed into bypass mode using the switch at the UPS.'
+              priority: AVERAGE
+            -
+              uuid: 43ee7b0082c44c169f8c1b7c81ebf10e
+              expression: 'last(/Schneider Galaxy UPS/upsBasicOutputStatus)=16'
+              name: 'The UPS was placed into static bypass mode'
+              priority: AVERAGE
+        -
+          uuid: 7375333aa72e4d36ae78c509b883c1d4
+          name: upsBasicStateAlarmStatus
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.11.1.2.0
+          key: upsBasicStateAlarmStatus
+          delay: 5m
+          description: |
+            The alarm status of the Power Module:
+            • noAlarms(1): The device has no alarms
+            present.
+            • infoAlarm (2): The device has alarms and
+            the highest severity of the alarms present is
+            infomational.
+            • warningAlarm (3): The device has alarms
+            and the highest severity of the alarms present is
+            warning.
+            • criticalAlarm (4): The device has alarms
+            and the highest severity of the alarms present is
+            critical.
+          triggers:
+            -
+              uuid: 18752c1974ef4532bcf885566ce150c2
+              expression: 'last(/Schneider Galaxy UPS/upsBasicStateAlarmStatus)=4'
+              name: 'Critical alarm present'
+              priority: HIGH
+              description: |
+                The device has alarms
+                and the highest severity of the alarms present is
+                critical
+            -
+              uuid: d46afe2b7e174d778a404e9861f04d59
+              expression: 'last(/Schneider Galaxy UPS/upsBasicStateAlarmStatus)=2'
+              name: 'Informational alarm present'
+              priority: INFO
+              description: |
+                The device has alarms and
+                the highest severity of the alarms present is
+                infomational.
+            -
+              uuid: ad4311a813c141f180c6556c449c6beb
+              expression: 'last(/Schneider Galaxy UPS/upsBasicStateAlarmStatus)=3'
+              name: 'Warning alarm present'
+              priority: WARNING
+              description: |
+                The device has alarms
+                and the highest severity of the alarms present is
+                warning
+        -
+          uuid: 5529a65745934d79ad8249d69757ba20
+          name: upsBasicSystemStatus
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.4.1.3.0
+          key: upsBasicSystemStatus
+          delay: 5m
+          description: |
+            Current state for the whole system (UPS and
+            surrounding breakers). If the UPS is unable to
+            determine the state of the system, this variable is
+            set to unknown(1).
+            • unknown (1)
+            • onLine (2)
+            • onBattery (3)
+            • onSmartBoost (4)
+            • timedSleeping (5)
+            • softwareBypass (6)
+            • off (7)
+            • rebooting (8)
+            • switchedBypass (9)
+            • hardwareFailureBypass (10)
+            •sleepingUntilPowerReturn (11)
+            •onSmartTrim (12)
+            •ecoMode (13)
+            •inverter (14)
+            •eConversion (15)
+            •staticBypassStandby (16)
+            •efficiencyBoosterMode (17)
+        -
+          uuid: 2829163cceb542f0bb7b9130a611a99f
+          name: upsEnergyEfficiencyStatsInputEnergyUsage
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.22.3.5.0
+          key: upsEnergyEfficiencyStatsInputEnergyUsage
+          delay: 10m
+          units: kWh
+          description: |
+            The input energy usage of the UPS in kWh since
+            timer reset.
+        -
+          uuid: 935c867ed6304ae891895061ec273128
+          name: upsEnergyEfficiencyStatsOutputEnergyUsage
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.22.3.6.0
+          key: upsEnergyEfficiencyStatsOutputEnergyUsage
+          delay: 10m
+          units: kWh
+          description: 'The output energy usage of the UPS in kWh since timer reset'
+        -
+          uuid: b0aa04fb02fc47ccb4b3375fd43466cd
+          name: upsOpStatsTimeInECOnversionOperation
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.22.2.6.0
+          key: upsOpStatsTimeInECOnversionOperation
+          delay: 1h
+          units: minutes
+          description: |
+            Total time for UPS in ECOnversion since timer
+            reset via upsOpStatsReset (in minutes)
+      discovery_rules:
+        -
+          uuid: 0d629be4c60c45099187a40b87eba0bb
+          name: 'Input phase discovery'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#PHASEINDEX},1.3.6.1.4.1.318.1.1.1.9.2.3.1.2.1]'
+          key: InputPhases
+          delay: 24h
+          item_prototypes:
+            -
+              uuid: cf6b81d6ecdf468b84dc73aff5886272
+              name: 'upsPhaseInputCurrent phase {#PHASEINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.318.1.1.1.9.2.3.1.6.1.{#PHASEINDEX}'
+              key: 'upsPhaseInputCurrent[{#PHASEINDEX}]'
+              units: amps
+              description: 'The input current in amperes.'
+              preprocessing:
+                -
+                  type: MULTIPLIER
+                  parameters:
+                    - '0.1'
+            -
+              uuid: 6cd8ef6a3ef34dd6a1e73cdde9b080cd
+              name: 'upsPhaseInputPowerFactor phase {#PHASEINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.318.1.1.1.9.2.3.1.13.1.{#PHASEINDEX}'
+              key: 'upsPhaseInputPowerFactor[{#PHASEINDEX}]'
+              delay: 10m
+              description: 'The input power factor measured in hundredth.'
+            -
+              uuid: 71a025f0b7cd4642b5dff6f73f32c6e2
+              name: 'upsPhaseInputPower phase {#PHASEINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.318.1.1.1.9.2.3.1.9.1.{#PHASEINDEX}'
+              key: 'upsPhaseInputPower[{#PHASEINDEX}]'
+              units: Watts
+              description: 'The input power in Watts'
+            -
+              uuid: 3914a72ad3d347a8a5b5b8242705cbf5
+              name: 'upsPhaseInputVoltagePN phase {#PHASEINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.318.1.1.1.9.2.3.1.14.1.{#PHASEINDEX}'
+              key: 'upsPhaseInputVoltagePN[{#PHASEINDEX}]'
+              units: VAC
+              description: 'The input voltage measured across Phase to Neutral in VAC'
+            -
+              uuid: 8d15e3914e764049b3a259e0d12489da
+              name: 'upsPhaseInputVoltage phase {#PHASEINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.318.1.1.1.9.2.3.1.3.1.{#PHASEINDEX}'
+              key: 'upsPhaseInputVoltage[{#PHASEINDEX}]'
+              delay: 30s
+              units: VAC
+              description: 'The input voltage in VAC'
+        -
+          uuid: b85e7315dbba49e5b50b69f4640928a3
+          name: 'Output phase discovery'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#PHASEINDEX},1.3.6.1.4.1.318.1.1.1.9.3.3.1.2.1]'
+          key: OutputPhases
+          delay: 24h
+          item_prototypes:
+            -
+              uuid: e0f7301e2508481baa1d437fa29b4ee5
+              name: 'upsPhaseOutputApparentPower phase {#PHASEINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.318.1.1.1.9.3.3.1.20.1.{#PHASEINDEX}'
+              key: 'upsPhaseOutputApparentPower[{#PHASEINDEX}]'
+              delay: 5m
+              description: 'Apparent power in kVA.'
+            -
+              uuid: f9d9771d238e4cc5ac37ce63a07f2752
+              name: 'upsPhaseOutputCurrent phase {#PHASEINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.318.1.1.1.9.3.3.1.4.1.{#PHASEINDEX}'
+              key: 'upsPhaseOutputCurrent[{#PHASEINDEX}]'
+              value_type: FLOAT
+              units: amps
+              description: 'The output current in amperes.'
+              preprocessing:
+                -
+                  type: MULTIPLIER
+                  parameters:
+                    - '0.1'
+            -
+              uuid: 9b15310e5dbc4540bf8a5708cda7c3f8
+              name: 'upsPhaseOutputLoad phase {#PHASEINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.318.1.1.1.9.3.3.1.7.1.{#PHASEINDEX}'
+              key: 'upsPhaseOutputLoad[{#PHASEINDEX}]'
+              units: VA
+              description: 'The output load in VA, or -1 if it''s unsupported by this UPS.'
+            -
+              uuid: 88f859e9b631457295cb4fe994720f73
+              name: 'upsPhaseOutputPowerFactor phase {#PHASEINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.318.1.1.1.9.3.3.1.19.1.{#PHASEINDEX}'
+              key: 'upsPhaseOutputPowerFactor[{#PHASEINDEX}]'
+              delay: 5m
+              description: 'The output power factor of the UPS in hundredth'
+            -
+              uuid: f94e0a68483c46298986bff26271b091
+              name: 'upsPhaseOutputPower phase {#PHASEINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.318.1.1.1.9.3.3.1.13.1.{#PHASEINDEX}'
+              key: 'upsPhaseOutputPower[{#PHASEINDEX}]'
+              units: Watts
+              description: 'The output power in Watts.'
+            -
+              uuid: d30d8d9aef53473d87e092b036e8d1e8
+              name: 'upsPhaseOutputVoltagePN phase {#PHASEINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.318.1.1.1.9.3.3.1.22.1.{#PHASEINDEX}'
+              key: 'upsPhaseOutputVoltagePN[{#PHASEINDEX}]'
+              delay: 5m
+              units: VAC
+              description: 'The output voltage measured across Phase to Neutral in VAC'
+            -
+              uuid: 58e389ca312348f4acdd91eaea4e4f88
+              name: 'upsPhaseOutputVoltage phase {#PHASEINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.318.1.1.1.9.3.3.1.3.1.{#PHASEINDEX}'
+              key: 'upsPhaseOutputVoltage[{#PHASEINDEX}]'
+              delay: 5m
+              units: VAC
+              description: 'The output voltage in VAC.'
+      dashboards:
+        -
+          uuid: d3761961b0b44abb90b8108a26b41f36
+          name: 'UPS overview'
+          display_period: '60'
+          pages:
+            -
+              widgets:
+                -
+                  type: GRAPH_CLASSIC
+                  x: '16'
+                  width: '7'
+                  height: '5'
+                  fields:
+                    -
+                      type: GRAPH
+                      name: graphid
+                      value:
+                        host: 'Schneider Galaxy UPS'
+                        name: 'Battery temperature'
+                -
+                  type: GRAPH_CLASSIC
+                  x: '8'
+                  width: '8'
+                  height: '5'
+                  fields:
+                    -
+                      type: GRAPH
+                      name: graphid
+                      value:
+                        host: 'Schneider Galaxy UPS'
+                        name: 'Output load'
+                -
+                  type: GRAPH_PROTOTYPE
+                  name: 'Input Power'
+                  'y': '10'
+                  width: '23'
+                  height: '5'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: columns
+                      value: '3'
+                    -
+                      type: INTEGER
+                      name: source_type
+                      value: '3'
+                    -
+                      type: ITEM_PROTOTYPE
+                      name: itemid
+                      value:
+                        host: 'Schneider Galaxy UPS'
+                        key: 'upsPhaseInputPower[{#PHASEINDEX}]'
+                -
+                  type: ITEM
+                  name: 'Output load'
+                  width: '8'
+                  height: '5'
+                  fields:
+                    -
+                      type: ITEM
+                      name: itemid
+                      value:
+                        host: 'Schneider Galaxy UPS'
+                        key: upsAdvOutputLoad
+                -
+                  type: GRAPH_PROTOTYPE
+                  name: 'Output Power'
+                  'y': '5'
+                  width: '23'
+                  height: '5'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: source_type
+                      value: '3'
+                    -
+                      type: INTEGER
+                      name: columns
+                      value: '3'
+                    -
+                      type: ITEM_PROTOTYPE
+                      name: itemid
+                      value:
+                        host: 'Schneider Galaxy UPS'
+                        key: 'upsPhaseOutputPower[{#PHASEINDEX}]'
+  graphs:
+    -
+      uuid: 07019f983900421b8af2ac8525577888
+      name: 'Battery temperature'
+      graph_items:
+        -
+          color: 1A7C11
+          item:
+            host: 'Schneider Galaxy UPS'
+            key: upsAdvBatteryTemperature
+    -
+      uuid: ae19ebd4f9a848cc9d6271b07ca42609
+      name: 'Output load'
+      graph_items:
+        -
+          color: 1A7C11
+          item:
+            host: 'Schneider Galaxy UPS'
+            key: upsAdvOutputLoad
