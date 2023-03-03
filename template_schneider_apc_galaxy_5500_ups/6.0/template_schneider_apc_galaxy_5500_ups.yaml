@@ -1,0 +1,362 @@
+zabbix_export:
+  version: '6.0'
+  date: '2023-03-03T12:10:13Z'
+  groups:
+    -
+      uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    -
+      uuid: 741996f257c4424dbeb9b456026fa6ec
+      template: 'Schneider APC Galaxy 5500 UPS'
+      name: 'Schneider APC Galaxy 5500 UPS'
+      description: |
+        Template to monitor Galaxy 5500 UPS devices via SNMP
+        Tested on Galaxy 5500.
+        
+        If this template is useful for you, please let me know:
+        marcel.brouwers[@]maastrichtuniversity.nl
+      groups:
+        -
+          name: Templates
+      items:
+        -
+          uuid: 7ad29bf8d7154b56b8dbf73a8ceef278
+          name: upsAdvBatteryActualVoltage
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.2.8.0
+          key: upsAdvBatteryActualVoltage
+          delay: 5m
+          units: volts
+          description: 'The actual battery bus voltage in Volts'
+        -
+          uuid: 4c64f3b21a4d48f98f51f666d3503007
+          name: upsAdvBatteryCapacity
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.2.1.0
+          key: upsAdvBatteryCapacity
+          delay: 5m
+          units: '%'
+          description: 'The remaining battery capacity expressed in percent of full capacity'
+        -
+          uuid: a5839655f47c4943b580444a21002cf6
+          name: upsAdvBatteryChargerStatus
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.2.17.0
+          key: upsAdvBatteryChargerStatus
+          delay: 5m
+          description: |
+            The status of the battery charger. If the UPS is
+            unable to find the state of charger, this variable is
+            set to unknown(1).
+            • unknown (1)
+            • ok (2)
+            • inFaultCondition (3)
+            • floatCharging (4)
+            • boostCharging (5)
+            • resting (6)
+            • notCharging (7)
+            • equalizationCharging (8)
+            • testInProgress (9)
+            • cyclicFloatCharging (10)
+          triggers:
+            -
+              uuid: 393da44cb4024b958e7e78e104f6119c
+              expression: 'last(/Schneider APC Galaxy 5500 UPS/upsAdvBatteryChargerStatus)=5'
+              name: 'upsAdvBatteryChargerStatus is off and failed'
+              priority: HIGH
+            -
+              uuid: a0ecbd14124d4819b4801a7351e2f3cb
+              expression: 'last(/Schneider APC Galaxy 5500 UPS/upsAdvBatteryChargerStatus)=6'
+              name: 'upsAdvBatteryChargerStatus is on and failed'
+              priority: HIGH
+            -
+              uuid: f7d785afa92a402fbb284515c903320b
+              expression: 'last(/Schneider APC Galaxy 5500 UPS/upsAdvBatteryChargerStatus)=7'
+              name: 'upsAdvBatteryChargerStatus lost communication'
+              priority: AVERAGE
+            -
+              uuid: 1c2c638f2adc4e7ab5241789e1682ea4
+              expression: 'last(/Schneider APC Galaxy 5500 UPS/upsAdvBatteryChargerStatus)=1'
+              name: 'upsAdvBatteryChargerStatus status is unknown'
+              priority: WARNING
+        -
+          uuid: c00602fad9644435aea6f6b9c727e534
+          name: upsAdvBatteryCurrent
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.2.9.0
+          key: upsAdvBatteryCurrent
+          delay: 5m
+          units: Amps
+          description: 'The battery current in Amps'
+        -
+          uuid: e026869307124d48aaa3e0dca454d8b1
+          name: upsAdvBatteryRunTimeRemaining
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.2.3.0
+          key: upsAdvBatteryRunTimeRemaining
+          delay: 2m
+          units: s
+          description: 'The UPS battery run time remaining before battery exhaustion'
+          preprocessing:
+            -
+              type: MULTIPLIER
+              parameters:
+                - '0.01'
+        -
+          uuid: 688422ae7d2441a6a24b9b993536f899
+          name: upsAdvBatteryTemperature
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.2.2.0
+          key: upsAdvBatteryTemperature
+          delay: 5m
+          units: Celsius
+          description: 'The current internal UPS temperature expressed in Celsius'
+        -
+          uuid: 5af18e5d1f934ac2966a7b873d167367
+          name: upsAdvIdentFirmwareRevision
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.1.2.1.0
+          key: upsAdvIdentFirmwareRevision
+          delay: 24h
+          trends: '0'
+          value_type: CHAR
+          description: 'The firmware revision of the UPS system''s microprocessor'
+        -
+          uuid: 1bf7a05dcc0247fd893f33ea415e4cf3
+          name: upsAdvInputFrequency
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.3.2.4.0
+          key: upsAdvInputFrequency
+          units: Hz
+          description: 'The current input frequency to the UPS system in Hz'
+        -
+          uuid: 2044e76cb81d45c3b13fb58d4b13c8db
+          name: upsAdvOutputActivePower
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.4.2.8.0
+          key: upsAdvOutputActivePower
+          delay: 2m
+          units: W
+          description: 'The total output active power of the UPS system in W. The total active power is the  sum of phase 1, phase 2 and phase 3 power.'
+        -
+          uuid: e1859d3e877048b18a6dfe8cf5514a23
+          name: upsAdvOutputApparentPower
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.4.2.9.0
+          key: upsAdvOutputApparentPower
+          delay: 2m
+          units: VA
+          description: 'The total output apparent power of all phases of the UPS system in VA.'
+        -
+          uuid: 5e9ca1564248407aad154bccf0a7a5e8
+          name: upsAdvOutputInverterFrequency
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.4.2.14.0
+          key: upsAdvOutputInverterFrequency
+          delay: 5m
+          units: Hz
+          description: 'Output frequency in Hz measured at the output of the inverter'
+        -
+          uuid: 0608e33b7de447af999e9b4da959b2a4
+          name: upsAdvOutputLoad
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.4.2.3.0
+          key: upsAdvOutputLoad
+          delay: 2m
+          units: '%'
+          description: 'The current UPS load expressed in percent of rated capacity'
+          triggers:
+            -
+              uuid: 9853d6a5abd545f7a4673df238116724
+              expression: 'last(/Schneider APC Galaxy 5500 UPS/upsAdvOutputLoad)>50'
+              name: 'UPS load above 50%'
+              priority: AVERAGE
+              description: |
+                UPS load above 50%
+                Might be ok in your case but in most setups with two feeds this should only happen in case of a power failure.
+        -
+          uuid: 739cd18e8e474097a2f89beaa02f7ae2
+          name: upsAdvStateEcomode
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.11.2.13.0
+          key: upsAdvStateEcomode
+          delay: 1h
+          description: |
+            Eco mode status.
+            1: UPS is on Eco-mode
+            2: UPS is not on Eco-mode.
+        -
+          uuid: bb54b4afd27547fcb819f6562bb7ff22
+          name: upsBasicBatteryStatus
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.1.1.0
+          key: upsBasicBatteryStatus
+          delay: 1h
+          description: |
+            The status of the UPS batteries.
+            
+            A batteryLow(3) value indicates the UPS will be unable to sustain the current load, and its services will be lost if power is not restored. A batteryInFaultCondition(4)value indicates that a battery installed has an internal error condition."
+            
+            INTEGER { unknown ( 1 ) , batteryNormal ( 2 ) , batteryLow ( 3 ) , batteryInFaultCondition ( 4 ) }
+          triggers:
+            -
+              uuid: 216ead04b4c4425986585b2e4122f0ea
+              expression: 'last(/Schneider APC Galaxy 5500 UPS/upsBasicBatteryStatus)=4'
+              name: 'UPS battery Fault condition'
+              priority: HIGH
+            -
+              uuid: 90104b703d584d68be6aa7d90ff6d2b8
+              expression: 'last(/Schneider APC Galaxy 5500 UPS/upsBasicBatteryStatus)=3'
+              name: 'UPS battery low'
+              priority: HIGH
+              description: 'Insufficient battery capacity to support the UPS equipment load.'
+            -
+              uuid: d6ee9a2af4c84ba1a58d866b51b8e805
+              expression: 'last(/Schneider APC Galaxy 5500 UPS/upsBasicBatteryStatus)=1'
+              name: 'UPS battery unknown'
+              priority: AVERAGE
+              description: 'The Management Card or PowerNet Agent cannot report the status.'
+        -
+          uuid: 03b4ea16f8d44b73b5ca88c21c84ba68
+          name: upsBasicIdentModel
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.1.1.1.0
+          key: upsBasicIdentModel
+          delay: 24h
+          trends: '0'
+          value_type: CHAR
+        -
+          uuid: 3709ef46170b489d846cafb531996ccb
+          name: upsDiagSubSysChargerStatus
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.13.4.20.1.3.1
+          key: upsDiagSubSysChargerStatus
+          delay: 5m
+          description: |
+            The status of the Charger.
+            unknown(1) indicates the device status is unknown.
+            notInstalled(2) indicates the device is not installed.
+            offOk(3) indicates the device status is off and OK.
+            onOk(4) indicates the device status is on and OK.
+            offFail(5) indicates the device status is off and failed.
+            onFail(6) indicates the device status is on and failed.
+            lostComm(7) indicates the device has lost communication.
+        -
+          uuid: 86b411585c21415caf0b3bc3bd85eba7
+          name: upsPhaseOutputVoltageOrientation
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.9.3.2.1.3
+          key: upsPhaseOutputVoltageOrientation
+          delay: 24h
+          description: |
+            The output voltage orientation:
+            1: unknown for this UPS
+            2: singlePhase - phase 1 voltage is between Phase 1
+            and Neutral.
+            3: splitPhase - phase 1 voltage is between Phase 1 and
+            Neutral; phase 2 voltage is between Phase 2 and Neutral;
+            phase 3 voltage is between Phase 1 and Phase 2.
+            4: threePhasePhaseToNeutral - phase 1 voltage is between
+            Phase 1 and Neutral; phase 2 voltage is between Phase 2
+            and Neutral; phase 3 voltage is between Phase 3 and
+            Neutral.
+            5: threePhasePhaseToPhase - phase 1 voltage is between
+            Phase 1 and Phase 2; phase 2 voltage is between Phase 2
+            and Phase 3; phase 3 voltage is between Phase 3 and
+            Phase 1.
+      discovery_rules:
+        -
+          uuid: 73897279804a45a1b56b76f7af99ab8d
+          name: 'Input phase discovery'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#PHASEINDEX},1.3.6.1.4.1.318.1.1.1.9.2.3.1.2.1.1]'
+          key: InputPhases
+          delay: 24h
+          item_prototypes:
+            -
+              uuid: 2cab160a12a54b50af65c24d27a5fed4
+              name: 'upsPhaseInputCurrent phase {#PHASEINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.318.1.1.1.9.2.3.1.6.1.1.{#PHASEINDEX}'
+              key: 'upsPhaseInputCurrent[{#PHASEINDEX}]'
+              units: amps
+              description: 'The input current in amperes.'
+        -
+          uuid: 8798a2488c21439187eec2423e280ff6
+          name: 'Output phase discovery'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#PHASEINDEX},1.3.6.1.4.1.318.1.1.1.9.3.3.1.2.1.1]'
+          key: OutputPhases
+          delay: 24h
+          item_prototypes:
+            -
+              uuid: c4a02187f60d425781d010bfae57c8e3
+              name: 'upsPhaseOutputCurrent phase {#PHASEINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.318.1.1.1.9.3.3.1.4.1.1.{#PHASEINDEX}'
+              key: 'upsPhaseOutputCurrent[{#PHASEINDEX}]'
+              units: amps
+              description: 'The output current in amperes.'
+            -
+              uuid: 2105e8919f32455d93d74d37389fce9e
+              name: 'upsPhaseOutputLoad phase {#PHASEINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.318.1.1.1.9.3.3.1.7.1.1.{#PHASEINDEX}'
+              key: 'upsPhaseOutputLoad[{#PHASEINDEX}]'
+              units: VA
+              description: 'The output load in VA, or -1 if it''s unsupported by this UPS.'
+            -
+              uuid: 7e375d733852401a815251aefdaedbc0
+              name: 'upsPhaseOutputPower phase {#PHASEINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.318.1.1.1.9.3.3.1.13.1.1.{#PHASEINDEX}'
+              key: 'upsPhaseOutputPower[{#PHASEINDEX}]'
+              units: Watts
+              description: 'The output power in Watts.'
+            -
+              uuid: f722412312ba44c9b0d8ec1ab7b8a483
+              name: 'upsPhaseOutputVoltage phase {#PHASEINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.318.1.1.1.9.3.3.1.3.1.1.{#PHASEINDEX}'
+              key: 'upsPhaseOutputVoltage[{#PHASEINDEX}]'
+              delay: 5m
+              units: VAC
+              description: 'The output voltage in VAC.'
+        -
+          uuid: 319be54180614f52878de0058a7fb02f
+          name: 'Breaker discovery'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#BREAKER},1.3.6.1.4.1.318.1.1.1.13.5.1.7.1.3]'
+          key: SwitchGearBreaker
+          delay: 24h
+          item_prototypes:
+            -
+              uuid: 4c7c80d098354c72b60372608f95892f
+              name: 'switchgearBreakerStatus {#BREAKER}'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.318.1.1.1.13.5.1.7.1.5.{#SNMPINDEX}'
+              key: 'switchgearBreakerStatus[{#BREAKER}]'
+              delay: 2m
+              description: |
+                The status of switchgear breaker.
+                unknown(1) indicates the breaker status is unknown.
+                opened (2) indicates the breaker is opened.
+                closed (3) indicates the breaker is closed.
+              trigger_prototypes:
+                -
+                  uuid: 1bb89a73bb484a7fa30897cd04aae5b8
+                  expression: 'change(/Schneider APC Galaxy 5500 UPS/switchgearBreakerStatus[{#BREAKER}])<>0'
+                  name: 'switchgearBreakerStatus changed for {#BREAKER}'
+                  priority: AVERAGE
+  graphs:
+    -
+      uuid: 55d2bf1d73c14cc8b65d3c38ab20188c
+      name: 'UPS output active power'
+      graph_items:
+        -
+          color: 1A7C11
+          calc_fnc: ALL
+          item:
+            host: 'Schneider APC Galaxy 5500 UPS'
+            key: upsAdvOutputActivePower
